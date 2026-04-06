@@ -46,7 +46,9 @@ Route::post('/theme', function (Request $request) {
     session(['theme' => $request->theme]);
 
     return response()->json([
-        'success' => true
+        'success' => true,
+        'message' => 'Theme berhasil diubah',
+        'theme' => $request->theme
     ]);
 })->middleware('auth')->name('theme.set');
 
@@ -120,10 +122,15 @@ Route::middleware(['auth', 'admin'])
         Route::get('/settings/profile', [ProfileController::class, 'adminProfile'])
             ->name('settings.profile');
 
-        Route::put('/settings/profile', [ProfileController::class, 'updateProfile']);
+        Route::put('/settings/profile', [ProfileController::class, 'updateAdminProfile'])
+            ->name('settings.profile.update');
 
-        Route::put('/settings/password', [ProfileController::class, 'changePassword'])
+        Route::put('/settings/password', [ProfileController::class, 'changeAdminPassword'])
             ->name('settings.password');
+
+        // Theme settings for admin
+        Route::post('/settings/theme', [ProfileController::class, 'updateTheme'])
+            ->name('settings.theme');
     });
 
 /*
@@ -157,14 +164,21 @@ Route::middleware(['auth', 'siswa'])
         Route::get('/history', [ComplaintController::class, 'history'])
             ->name('history.index');
 
-        // Profile
+        // Profile - GET
         Route::get('/profile', [ProfileController::class, 'siswaProfile'])
             ->name('profile.index');
 
-        Route::put('/profile', [ProfileController::class, 'updateProfile']);
+        // Profile - UPDATE
+        Route::put('/profile', [ProfileController::class, 'updateSiswaProfile'])
+            ->name('profile.update');
 
-        Route::put('/profile/password', [ProfileController::class, 'changePassword'])
+        // Password - UPDATE
+        Route::put('/profile/password', [ProfileController::class, 'changeSiswaPassword'])
             ->name('profile.password');
+
+        // Theme settings for siswa
+        Route::post('/profile/theme', [ProfileController::class, 'updateTheme'])
+            ->name('profile.theme');
     });
 
 /*

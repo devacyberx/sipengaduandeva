@@ -4,20 +4,18 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="h3 mb-0">
+    <!-- Header dengan tombol di bawah -->
+    <div class="mb-4">
+        <h2 class="h3 mb-2">
             <i class="bi bi-file-text me-2"></i>Laporan Pengaduan
         </h2>
         <div class="d-flex gap-2">
             <a href="{{ route('admin.reports.print') }}?{{ http_build_query(request()->query()) }}" 
-               class="btn btn-primary" 
+               class="btn btn-sm btn-primary" 
                target="_blank">
                 <i class="bi bi-printer me-1"></i>Cetak Laporan
             </a>
-            <a href="{{ route('admin.reports.download') }}?{{ http_build_query(request()->query()) }}" 
-               class="btn btn-success">
-                <i class="bi bi-download me-1"></i>Download PDF
-            </a>
+            <!-- TOMBOL DOWNLOAD PDF DIHAPUS -->
         </div>
     </div>
 
@@ -143,10 +141,7 @@
                    class="btn btn-sm btn-outline-light">
                     <i class="bi bi-printer me-1"></i>Print View
                 </a>
-                <a href="{{ route('admin.reports.download') }}?{{ http_build_query(request()->query()) }}" 
-                   class="btn btn-sm btn-outline-light">
-                    <i class="bi bi-download me-1"></i>PDF
-                </a>
+                <!-- TOMBOL PDF DI CARD HEADER DIHAPUS -->
             </div>
         </div>
         <div class="card-body">
