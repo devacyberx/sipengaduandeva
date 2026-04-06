@@ -2,33 +2,45 @@
 
 namespace App\Http\Controllers;
 
+// Model user (untuk database)
 use App\Models\User;
+
+// Untuk ambil input dari user
 use Illuminate\Http\Request;
+
+// Untuk enkripsi password
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
+        // Ambil data user dengan role siswa
         $query = User::where('role', 'siswa');
 
+        // Fitur search (nama, email, kelas)
         if ($request->has('search')) {
             $query->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('email', 'like', '%' . $request->search . '%')
                   ->orWhere('class', 'like', '%' . $request->search . '%');
         }
 
+        // Urut terbaru + pagination
         $students = $query->latest()->paginate(10);
+
+        // Kirim ke view
         return view('admin.users.index', compact('students'));
     }
 
     public function create()
     {
+        // Menampilkan form tambah user
         return view('admin.users.create');
     }
 
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
@@ -37,11 +49,15 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
+        // Simpan data ke database
         User::create([
             'name' => $request->name,
             'email' => $request->email,
+
+            // Password di-enkripsi
             'password' => Hash::make($request->password),
-            'role' => 'siswa',
+
+            'role' => 'siswa', // set role
             'class' => $request->class,
             'phone' => $request->phone,
         ]);
@@ -52,19 +68,23 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        // Cegah selain siswa
         if ($user->role != 'siswa') {
-            abort(403);
+            abort(403); // akses ditolak
         }
 
+        // Tampilkan form edit
         return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
+        // Cegah selain siswa
         if ($user->role != 'siswa') {
             abort(403);
         }
 
+        // Validasi data
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -72,6 +92,7 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
+        // Update data
         $user->update($request->only(['name', 'email', 'class', 'phone']));
 
         return redirect()->route('admin.users.index')
@@ -80,10 +101,12 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        // Cegah selain siswa
         if ($user->role != 'siswa') {
             abort(403);
         }
 
+        // Hapus data
         $user->delete();
 
         return redirect()->route('admin.users.index')
@@ -92,10 +115,12 @@ class UserController extends Controller
 
     public function resetPassword(User $user)
     {
+        // Cegah selain siswa
         if ($user->role != 'siswa') {
             abort(403);
         }
 
+        // Reset password (dienkripsi)
         $user->update([
             'password' => Hash::make('password123'),
         ]);
